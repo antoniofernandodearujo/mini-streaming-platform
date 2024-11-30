@@ -1,0 +1,34 @@
+{
+  "name": "streaming-video",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.699.0",
+    "@aws-sdk/s3-request-presigner": "^3.699.0",
+    "@videojs/http-streaming": "^3.15.0",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "hls.js": "^1.5.17",
+    "lucide-react": "^0.460.0",
+    "next": "15.0.3",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "video.js": "^8.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
