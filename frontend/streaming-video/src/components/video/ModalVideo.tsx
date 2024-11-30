@@ -10,7 +10,7 @@ export default function ModalVideo({ open, onClose, videoID }: ModalTypes) {
   useEffect(() => {
     if (!open) return; // Só execute se o modal estiver aberto
 
-    const urlHls = `http://localhost:8080/videos/${videoID}`;
+    const urlHls = `https://mini-streaming-platform-production.up.railway.app/${videoID}`;
 
     const fetchVideoURL = async () => {
       try {
