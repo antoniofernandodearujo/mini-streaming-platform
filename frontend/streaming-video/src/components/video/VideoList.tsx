@@ -55,7 +55,7 @@ export default function VideoList() {
           </div>
           <hr className="mb-4 h-1 bg-white w-11/12 border-none" />
           <ul className="flex flex-row flex-wrap gap-8 justify-center items-center">
-            {videos.map((video, index) => (
+            {videos.map((video: any, index) => (
               <li key={index} className="relative bg-gray-900 rounded-lg overflow-hidden transform transition-transform w-80 h-72 hover:scale-105">
                 <img
                   src={getThumbnail(video)} // Usando a função getThumbnail para a URL
@@ -80,6 +80,9 @@ export default function VideoList() {
               </li>
             ))}
           </ul>
+            {videos.length === 0 && (
+            <p className="text-white text-lg">Nenhum vídeo disponível no momento.</p>
+            )}
 
           {/* Modal de vídeo */}
         {selectedVideo && (
