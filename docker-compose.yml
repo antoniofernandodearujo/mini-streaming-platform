@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - STORAGE_PATH=/app/videos
+      - VIDEO_BASE_DIR=videos
+      - HLS_BASE_DIR=hls
+    depends_on:
+      - ffmpeg
+    volumes:
+      - ./videos:/app/videos
+
+  ffmpeg:
+    image: jrottenberg/ffmpeg:5.1-alpine
+    command: ["ffmpeg", "-version"]
