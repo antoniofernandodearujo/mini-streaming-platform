@@ -10,10 +10,10 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copiar todos os arquivos do projeto para o container
-# COPY . .
+COPY . .
 
 # Copiar o arquivo .env para o diretório de trabalho no container
-COPY .env .env
+# COPY .env .env
 
 # Instalar dependências Go
 RUN go mod tidy
