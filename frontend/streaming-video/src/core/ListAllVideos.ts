@@ -24,4 +24,4 @@ class VideoLister {
     }
 }
 // Exporta uma instância já configurada da classe
-export default new VideoLister("http://localhost:8080");
+export default new VideoLister("https://mini-streaming-platform-production.up.railway.app");
