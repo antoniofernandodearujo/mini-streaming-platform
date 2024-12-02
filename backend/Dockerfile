@@ -17,7 +17,8 @@ COPY . .
 
 
 # Cria diretórios necessários e define permissões
-RUN mkdir -p /app/videos/hls /app/videos/videos && chmod -R 755 /app/videos
+# Cria diretórios no /tmp e define permissões
+RUN mkdir -p /tmp/videos/hls /tmp/videos/videos && chmod -R 755 /tmp/videos
 
 # Instalar dependências Go
 RUN go mod tidy
@@ -29,4 +30,4 @@ RUN go build -o main cmd/main.go
 EXPOSE 8080
 
 # Rodar o servidor Go
-CMD ["./main"]
+CMD ["sh", "-c", "mkdir -p /tmp/videos/hls /tmp/videos/videos && chmod -R 755 /tmp/videos && ./main"]
