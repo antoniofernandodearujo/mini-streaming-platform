@@ -54,7 +54,7 @@ func (h *ProcessHandler) HandleProcess(w http.ResponseWriter, r *http.Request) {
 
 	// Transcodificar o vídeo
 	qualities := []string{"1080p", "720p", "480p"}
-	err = services.TranscodeVideoToHLS(videoID, tempFile, qualities, h.S3Client)
+	err = services.TranscodeVideoToHLS(videoID, tempFile, qualities)
 	if err != nil {
 		http.Error(w, "Failed to transcode video", http.StatusInternalServerError)
 		return

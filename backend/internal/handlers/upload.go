@@ -3,61 +3,48 @@ package handlers
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"streaming-platform/internal/services"
-
-	"streaming-platform/internal/storage"
-
-	"streaming-platform/utils"
 )
 
-type UploadHandler struct {
-	S3Client *storage.S3Client
-}
+type UploadHandler struct{}
 
-func NewUploadHandler(s3Client *storage.S3Client) *UploadHandler {
-	return &UploadHandler{S3Client: s3Client}
+func NewUploadHandler() *UploadHandler {
+	return &UploadHandler{}
 }
 
 func (h *UploadHandler) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, "Failed to get file from request", http.StatusBadRequest)
+		http.Error(w, "Erro ao obter arquivo", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
-	// Salvar o arquivo localmente para transcodificação
-	tempFilePath := fmt.Sprintf("/tmp/%s", header.Filename)
-	outFile, err := os.Create(tempFilePath)
+	tempDir := filepath.Join(os.TempDir(), "uploads")
+	os.MkdirAll(tempDir, os.ModePerm)
+
+	filePath := filepath.Join(tempDir, header.Filename)
+	out, err := os.Create(filePath)
 	if err != nil {
-		http.Error(w, "Failed to save file locally", http.StatusInternalServerError)
+		http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
 		return
 	}
-	defer os.Remove(tempFilePath)
-	defer outFile.Close()
+	defer out.Close()
 
-	_, err = io.Copy(outFile, file)
-	if err != nil {
-		http.Error(w, "Failed to save file locally", http.StatusInternalServerError)
-		return
-	}
+	io.Copy(out, file)
 
-	videoID := utils.RemoveExtensionID(header.Filename)
-	log.Printf("videoID após a remoção da extensão: %s", videoID)
-	// Transcodificar e enviar para S3
-	qualities := []string{"1080p", "720p", "480p"} // Defina as qualidades desejadas
+	videoID := header.Filename
+	qualities := []string{"720p", "480p"} // Redução de qualidades para economizar
 
-	err = services.TranscodeVideoToHLS(videoID, tempFilePath, qualities, h.S3Client)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to transcode and upload video: %v", err), http.StatusInternalServerError)
+	if err := services.TranscodeVideoToHLS(videoID, filePath, qualities); err != nil {
+		http.Error(w, fmt.Sprintf("Erro na transcodificação: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Video uploaded and transcoded successfully: %s\n", videoID)
+	fmt.Fprintf(w, "Vídeo %s transcodificado com sucesso", videoID)
 }
-

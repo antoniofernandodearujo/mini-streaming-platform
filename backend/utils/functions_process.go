@@ -93,7 +93,7 @@ func processSingleVideo(ctx context.Context, videoKey string, s3Client *storage.
 	defer os.Remove(tempFile)
 
 	videoID := filepath.Base(videoKey)
-	err = services.TranscodeVideoToHLS(videoID, tempFile, qualities, s3Client)
+	err = services.TranscodeVideoToHLS(videoID, tempFile, qualities)
 	if err != nil {
 		return fmt.Errorf("erro ao transcodificar vídeo %s: %v", videoKey, err)
 	}

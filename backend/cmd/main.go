@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"streaming-platform/config"
@@ -17,41 +18,37 @@ func main() {
 	// Carregar variáveis de ambiente
 	config := config.LoadConfig()
 
-	log.Printf("Iniciando servidor com as seguintes configurações:")
-	log.Printf("StoragePath: %s", config.StoragePath)
-	log.Printf("S3Bucket: %s", config.S3Bucket)
-	log.Printf("Qualities: %v", config.Qualities)
+	log.Printf("Iniciando servidor com as seguintes configurações básicas...")
 
-	// Criar o cliente S3
+	// Criar cliente S3
 	s3Client, err := storage.NewS3Client(config.S3Bucket, config.S3Region)
 	if err != nil {
 		log.Fatalf("Erro ao inicializar cliente S3: %v", err)
 	}
 
-	// Configurar handlers específicos
-	uploadHandler := handlers.NewUploadHandler(s3Client) // Exemplo de criação de handler
+	// Configurar handlers
+	uploadHandler := handlers.NewUploadHandler()
 	processHandler := handlers.NewProcessHandler(s3Client)
 
 	// Configurar rotas
 	router := routes.SetupRoutes(uploadHandler, processHandler)
 
-	// Iniciar o loop de processamento de vídeos em goroutine separada
+	// Loop de processamento otimizado
 	go func() {
 		for {
-			fmt.Println("Iniciando processamento de vídeos...")
-			err := utils.ProcessVideos(s3Client, config.Qualities)
-			if err != nil {
-				fmt.Printf("Erro durante processamento: %v\n", err)
+			log.Println("Processando vídeos...")
+			if err := utils.ProcessVideos(s3Client, config.Qualities); err != nil {
+				log.Printf("Erro no processamento: %v", err)
 			}
-
-			fmt.Println("Aguardando para reiniciar processamento...")
-			time.Sleep(10 * time.Minute)
+			time.Sleep(25 * time.Minute) // Intervalo maior para economizar recursos
 		}
 	}()
 
-	// Iniciar o servidor HTTP
-	port := "8080"
+	// Configuração da porta pelo Railway
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Padrão
+	}
 	log.Printf("Servidor iniciado na porta %s", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
 }
-
