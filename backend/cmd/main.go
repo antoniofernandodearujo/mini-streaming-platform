@@ -17,6 +17,11 @@ func main() {
 	// Carregar variáveis de ambiente
 	config := config.LoadConfig()
 
+	log.Printf("Iniciando servidor com as seguintes configurações:")
+	log.Printf("StoragePath: %s", config.StoragePath)
+	log.Printf("S3Bucket: %s", config.S3Bucket)
+	log.Printf("Qualities: %v", config.Qualities)
+
 	// Criar o cliente S3
 	s3Client, err := storage.NewS3Client(config.S3Bucket, config.S3Region)
 	if err != nil {
