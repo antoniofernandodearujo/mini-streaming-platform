@@ -15,6 +15,10 @@ COPY . .
 # Copiar o arquivo .env para o diretório de trabalho no container
 # COPY .env .env
 
+
+# Cria diretórios necessários e define permissões
+RUN mkdir -p /app/videos/hls /app/videos/videos && chmod -R 755 /app/videos
+
 # Instalar dependências Go
 RUN go mod tidy
 
